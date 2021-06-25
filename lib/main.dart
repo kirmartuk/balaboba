@@ -34,31 +34,43 @@ class MyApp extends StatelessWidget {
 class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var queryData = 1 *  MediaQuery.of(context).devicePixelRatio;
     return Scaffold(
-        body: Card(
-      color: Utils.hexToColor("#fff500"),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 50.w,
-              child: Text(
-                "Нейросеть не знает, что говорит, и может сказать всякое — если что, не обижайтесь. Распространяя получившиеся тексты, помните об ответственности.",
-                style: TextStyle(fontSize: 16),
+        body: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          child: Card(
+            color: Utils.hexToColor("#fff500"),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 50.w,
+                    child: Text(
+                      "Нейросеть не знает, что говорит, и может сказать всякое — если что, не обижайтесь. Распространяя получившиеся тексты, помните об ответственности.",
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                      margin: EdgeInsets.all(2.w),
+                      alignment: Alignment.center,
+                      child: MaterialButton(
+                        onPressed: fun,
+                        color: Colors.black,
+                        child: Text("Договорились"),
+                        textColor: Colors.white,
+                      ))
+                ],
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.center,
-              child: MaterialButton(
-            onPressed: fun,
-            color: Colors.black,
-            child: Text("Договорились"),
-            textColor: Colors.white,
-          ))
-        ],
-      ),
+        ),
+      ],
     ));
   }
 
