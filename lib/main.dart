@@ -1,7 +1,12 @@
-import 'package:balaboba/utils/AppColors.dart';
+import 'dart:convert';
+
+import 'package:balaboba/api_repository.dart';
+import 'package:balaboba/utils/app_colors.dart';
+import 'package:balaboba/utils/app_strings.dart';
 import 'package:flutter/material.dart';
-import 'package:balaboba/utils/Utils.dart';
 import 'package:sizer/sizer.dart';
+
+import 'models.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,15 +20,6 @@ class MyApp extends StatelessWidget {
       return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
           primarySwatch: Colors.blue,
         ),
         home: IntroPage(),
@@ -42,7 +38,7 @@ class IntroPage extends StatelessWidget {
         Container(
           alignment: Alignment.center,
           child: Card(
-            color: AllColors.mainColor,
+            color: AppColors.mainColor,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -51,7 +47,7 @@ class IntroPage extends StatelessWidget {
                   Container(
                     width: 50.w,
                     child: Text(
-                      "Нейросеть не знает, что говорит, и может сказать всякое — если что, не обижайтесь. Распространяя получившиеся тексты, помните об ответственности.",
+                      AppStrings.disclaimer,
                       style: TextStyle(fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
@@ -67,7 +63,7 @@ class IntroPage extends StatelessWidget {
                                   builder: (context) => SearchPage()));
                         },
                         color: Colors.black,
-                        child: Text("Договорились"),
+                        child: Text(AppStrings.agreed),
                         textColor: Colors.white,
                       ))
                 ],
@@ -86,6 +82,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  String response = "test";
+  var inputController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,16 +97,35 @@ class _SearchPageState extends State<SearchPage> {
             width: 75.w,
             child: TextFormField(
               maxLines: null,
+              controller: inputController,
               decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(width: 3, color: AllColors.mainColor)),
-                  fillColor: AllColors.mainColor,
+                          BorderSide(width: 3, color: AppColors.mainColor)),
+                  fillColor: AppColors.mainColor,
                   border: OutlineInputBorder(),
-                  hintText:
-                      "Напишите что-нибудь и получите продолжение от Балабобы"),
+                  hintText: AppStrings.inputHint),
             ),
           ),
+          Container(
+            child: MaterialButton(
+              color: AppColors.mainColor,
+              child: Text(AppStrings.makeBalabol),
+              textColor: Colors.black,
+              onPressed: () async {
+                var response =
+                    await ApiRepository().makeRequest(inputController.text);
+                setState(() {
+                  this.response =
+                      BalabobaResponse.fromJson(jsonDecode(response.body)).text;
+                });
+                print(response.body.toString());
+              },
+            ),
+          ),
+          Container(
+            child: Text(response),
+          )
         ],
       ),
     ));
