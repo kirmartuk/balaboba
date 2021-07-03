@@ -25,4 +25,9 @@ class BalabobaResponse {
         error = json['error'],
         query = json['query'],
         text = json['text'];
+
+  @override
+  String toString() {
+    return 'BalabobaResponse{bad_query: $bad_query, error: $error, query: $query, text: $text}';
+  }
 }
