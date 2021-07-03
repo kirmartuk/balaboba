@@ -1,12 +1,8 @@
-import 'dart:convert';
-
-import 'package:balaboba/api_repository.dart';
+import 'package:balaboba/api/api_repository.dart';
 import 'package:balaboba/utils/app_colors.dart';
 import 'package:balaboba/utils/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-
-import 'models.dart';
 
 void main() {
   runApp(MyApp());
@@ -88,45 +84,47 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-      child: Column(
-        children: [
-          Container(height: 15.h, child: Image.asset('assets/balaboba.png')),
-          Container(
-            height: 15.h,
-            width: 75.w,
-            child: TextFormField(
-              maxLines: null,
-              controller: inputController,
-              decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(width: 3, color: AppColors.mainColor)),
-                  fillColor: AppColors.mainColor,
-                  border: OutlineInputBorder(),
-                  hintText: AppStrings.inputHint),
+        body: SingleChildScrollView(
+      child: Center(
+        child: Column(
+          children: [
+            Container(height: 15.h, child: Image.asset('assets/balaboba.png')),
+            Container(
+              height: 15.h,
+              width: 75.w,
+              child: TextFormField(
+                maxLines: null,
+                controller: inputController,
+                decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 3, color: AppColors.mainColor)),
+                    fillColor: AppColors.mainColor,
+                    border: OutlineInputBorder(),
+                    hintText: AppStrings.inputHint),
+              ),
             ),
-          ),
-          Container(
-            child: MaterialButton(
-              color: AppColors.mainColor,
-              child: Text(AppStrings.makeBalabol),
-              textColor: Colors.black,
-              onPressed: () async {
-                var response =
-                    await ApiRepository().makeRequest(inputController.text);
-                setState(() {
-                  this.response =
-                      BalabobaResponse.fromJson(jsonDecode(response.body)).text;
-                });
-                print(response.body.toString());
-              },
+            Container(
+              child: MaterialButton(
+                color: AppColors.mainColor,
+                child: Text(AppStrings.makeBalabol),
+                textColor: Colors.black,
+                onPressed: () async {
+                  var response = await ApiRepository()
+                      .getTextGeneratedBalaboba(1, 0, inputController.text);
+
+                  setState(() {
+                    this.response = response.text;
+                  });
+                },
+              ),
             ),
-          ),
-          Container(
-            child: Text(response),
-          )
-        ],
+            Container(
+              margin: EdgeInsets.all(5.w),
+              child: Text(response),
+            )
+          ],
+        ),
       ),
     ));
   }
