@@ -28,4 +28,9 @@ class ApiRepository {
 
     return BalabobaResponse.fromJson(res.body);
   }
+
+  Future<IntroDto> getIntros() async {
+    var res = await service!.getIntros();
+    return IntroDto.fromJson(res.body);
+  }
 }

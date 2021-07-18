@@ -1,8 +1,11 @@
 import 'package:balaboba/api/api_repository.dart';
 import 'package:balaboba/utils/app_colors.dart';
 import 'package:balaboba/utils/app_strings.dart';
+import 'package:balaboba/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+
+import 'models.dart';
 
 void main() {
   runApp(MyApp());
@@ -41,7 +44,7 @@ class IntroPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 50.w,
+                    width: 75.w,
                     child: Text(
                       AppStrings.disclaimer,
                       style: TextStyle(fontSize: 16),
@@ -78,8 +81,23 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  String response = "test";
+  String response = "";
   var inputController = TextEditingController();
+  bool loading = false;
+  List<Intro> intros = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadIntros();
+  }
+
+  void loadIntros() async {
+    var receivedIntros = await ApiRepository().getIntros();
+    setState(() {
+      intros = receivedIntros.intros;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +106,37 @@ class _SearchPageState extends State<SearchPage> {
       child: Center(
         child: Column(
           children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+              child: Row(
+                children: [
+                  Container(
+                    child: Text(
+                      AppStrings.balabobaStyle + ':',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                        height: MediaQuery.of(context).size.height * 0.06,
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: intros.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text('${intros[index].name}'),
+                                  ));
+                            })),
+                  ),
+                ],
+              ),
+            ),
             Container(height: 15.h, child: Image.asset('assets/balaboba.png')),
             Container(
               height: 15.h,
@@ -106,21 +155,36 @@ class _SearchPageState extends State<SearchPage> {
             ),
             Container(
               child: MaterialButton(
+                padding: const EdgeInsets.all(20.0),
                 color: AppColors.mainColor,
                 child: Text(AppStrings.makeBalabol),
                 textColor: Colors.black,
                 onPressed: () async {
+                  setState(() {
+                    this.loading = true;
+                  });
+
                   var response = await ApiRepository()
                       .getTextGeneratedBalaboba(1, 0, inputController.text);
 
+                  print(intros);
+
                   setState(() {
                     this.response = response.text;
+                    this.loading = false;
                   });
                 },
               ),
             ),
+            loading
+                ? Container(child: CircularProgressIndicator())
+                : Container(),
             Container(
+              width: 75.w,
               margin: EdgeInsets.all(5.w),
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Utils.hexToColor("#e2e2e2"))),
               child: Text(response),
             )
           ],

@@ -14,6 +14,11 @@ abstract class BalabobaApiService extends ChopperService {
       path: '/text3',
       headers: {'Content-Type': 'application/json; charset=UTF-8'})
   Future<Response> getTextGeneratedByBalaboba(
-    @Body() Map<String, dynamic> body,
-  );
+      @Body() Map<String, dynamic> body,
+      );
+
+  @Get(path: '/intros', headers: {'Content-Type': 'application/json; charset=UTF-8'})
+  Future<Response> getIntros();
+
+
 }

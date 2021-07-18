@@ -26,7 +26,18 @@ class _$BalabobaApiService extends BalabobaApiService {
 
     final $body = body;
     final $request =
-        Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
+    Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getIntros() {
+    final $url = '/lab/api/yalm/intros';
+    final $headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+
+    final $request = Request('GET', $url, client.baseUrl, headers: $headers);
     return client.send<dynamic, dynamic>($request);
   }
 }

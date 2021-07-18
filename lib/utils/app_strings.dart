@@ -3,4 +3,6 @@ class AppStrings {
   static const String agreed = "Договорились";
   static const String inputHint = "Напишите что-нибудь и получите продолжение от Балабобы";
   static const String makeBalabol = "Набалобобить";
+  static const String responseDisclaimer = "Нейросеть подражает текстам в интернете. Не относитесь к написанному серьёзно";
+  static const String balabobaStyle = "Стилизация";
 }
