@@ -36,6 +36,7 @@ class Intro {
   int id = 0;
   String name = "";
   String hint = "";
+  bool isSelected = false;
 
   Intro(this.id, this.name, this.hint);
 

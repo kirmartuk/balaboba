@@ -102,92 +102,113 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-              child: Row(
-                children: [
-                  Container(
-                    child: Text(
-                      AppStrings.balabobaStyle + ':',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                        height: MediaQuery.of(context).size.height * 0.06,
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: intros.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Card(
+        body: SafeArea(
+      child: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                height: 60,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Text(
+                        AppStrings.balabobaStyle + ":",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: intros.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  intros[index].isSelected =
+                                      !intros[index].isSelected;
+                                });
+                                print('fuck');
+                              },
+                              child: Card(
+                                  color: intros[index].isSelected
+                                      ? Colors.black
+                                      : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15.0),
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text('${intros[index].name}'),
-                                  ));
-                            })),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        '${intros[index].name}',
+                                        style: TextStyle(
+                                            color: intros[index].isSelected
+                                                ? Colors.white
+                                                : Colors.black),
+                                      ),
+                                    ),
+                                  )),
+                            );
+                          }),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-            Container(height: 15.h, child: Image.asset('assets/balaboba.png')),
-            Container(
-              height: 15.h,
-              width: 75.w,
-              child: TextFormField(
-                maxLines: null,
-                controller: inputController,
-                decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(width: 3, color: AppColors.mainColor)),
-                    fillColor: AppColors.mainColor,
-                    border: OutlineInputBorder(),
-                    hintText: AppStrings.inputHint),
+              Container(
+                  height: 15.h, child: Image.asset('assets/balaboba.png')),
+              Container(
+                height: 15.h,
+                width: 75.w,
+                child: TextFormField(
+                  maxLines: null,
+                  controller: inputController,
+                  decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(width: 3, color: AppColors.mainColor)),
+                      fillColor: AppColors.mainColor,
+                      border: OutlineInputBorder(),
+                      hintText: AppStrings.inputHint),
+                ),
               ),
-            ),
-            Container(
-              child: MaterialButton(
-                padding: const EdgeInsets.all(20.0),
-                color: AppColors.mainColor,
-                child: Text(AppStrings.makeBalabol),
-                textColor: Colors.black,
-                onPressed: () async {
-                  setState(() {
-                    this.loading = true;
-                  });
+              Container(
+                child: MaterialButton(
+                  padding: const EdgeInsets.all(20.0),
+                  color: AppColors.mainColor,
+                  child: Text(AppStrings.makeBalabol),
+                  textColor: Colors.black,
+                  onPressed: () async {
+                    setState(() {
+                      this.loading = true;
+                    });
 
-                  var response = await ApiRepository()
-                      .getTextGeneratedBalaboba(1, 0, inputController.text);
+                    var response = await ApiRepository()
+                        .getTextGeneratedBalaboba(1, 0, inputController.text);
 
-                  print(intros);
+                    print(intros);
 
-                  setState(() {
-                    this.response = response.text;
-                    this.loading = false;
-                  });
-                },
+                    setState(() {
+                      this.response = response.text;
+                      this.loading = false;
+                    });
+                  },
+                ),
               ),
-            ),
-            loading
-                ? Container(child: CircularProgressIndicator())
-                : Container(),
-            Container(
-              width: 75.w,
-              margin: EdgeInsets.all(5.w),
-              padding: EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                  border: Border.all(color: Utils.hexToColor("#e2e2e2"))),
-              child: Text(response),
-            )
-          ],
+              loading
+                  ? Container(child: CircularProgressIndicator())
+                  : Container(),
+              Container(
+                width: 75.w,
+                margin: EdgeInsets.all(5.w),
+                padding: EdgeInsets.all(5.0),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Utils.hexToColor("#e2e2e2"))),
+                child: Text(response),
+              )
+            ],
+          ),
         ),
       ),
     ));
