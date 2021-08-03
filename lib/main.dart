@@ -1,4 +1,11 @@
+import 'package:balaboba/api/api_repository.dart';
+import 'package:balaboba/utils/app_colors.dart';
+import 'package:balaboba/utils/app_strings.dart';
+import 'package:balaboba/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
+
+import 'models.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,108 +15,219 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return Sizer(builder: (context, orientation, deviceType) {
+      return MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: IntroPage(),
+      );
+    });
   }
 }
 
-
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class IntroPage extends StatelessWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          child: Card(
+            color: AppColors.mainColor,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 75.w,
+                    child: Text(
+                      AppStrings.disclaimer,
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                      margin: EdgeInsets.all(2.w),
+                      alignment: Alignment.center,
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SearchPage()));
+                        },
+                        color: Colors.black,
+                        child: Text(AppStrings.agreed),
+                        textColor: Colors.white,
+                      ))
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ));
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class SearchPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _SearchPageState();
+}
 
-  void _incrementCounter() {
+class _SearchPageState extends State<SearchPage> {
+  BalabobaResponse? response;
+  var inputController = TextEditingController();
+  bool loading = false;
+  List<Intro> intros = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadIntros();
+  }
+
+  void loadIntros() async {
+    var receivedIntros = await ApiRepository().getIntros();
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      intros = receivedIntros.intros;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        body: SafeArea(
+      child: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                height: 60,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Text(
+                        AppStrings.balabobaStyle + ":",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: intros.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  intros[index].isSelected =
+                                      !intros[index].isSelected;
+                                });
+                                print('fuck');
+                              },
+                              child: Card(
+                                  color: intros[index].isSelected
+                                      ? Colors.black
+                                      : Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        '${intros[index].name}',
+                                        style: TextStyle(
+                                            color: intros[index].isSelected
+                                                ? Colors.white
+                                                : Colors.black),
+                                      ),
+                                    ),
+                                  )),
+                            );
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                  height: 15.h, child: Image.asset('assets/balaboba.png')),
+              Container(
+                constraints: BoxConstraints(maxHeight: 15.h),
+                width: 90.w,
+                child: TextFormField(
+                  maxLines: null,
+                  controller: inputController,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 3, color: AppColors.mainColor)),
+                    fillColor: AppColors.mainColor,
+                    border: OutlineInputBorder(),
+                    hintText: AppStrings.inputHint,
+                    suffixIcon: IconButton(
+                      onPressed: inputController.clear,
+                      icon: Icon(Icons.clear),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(5.w),
+                child: MaterialButton(
+                  padding: const EdgeInsets.all(20.0),
+                  color: AppColors.mainColor,
+                  child: Text(AppStrings.makeBalabol),
+                  textColor: Colors.black,
+                  onPressed: () async {
+                    setState(() {
+                      this.loading = true;
+                    });
+
+                    var response = await ApiRepository()
+                        .getTextGeneratedBalaboba(1, 0, inputController.text);
+
+                    print(intros);
+
+                    setState(() {
+                      this.response = response;
+                      this.loading = false;
+                    });
+                  },
+                ),
+              ),
+              loading
+                  ? Container(
+                      margin: EdgeInsets.all(15.0),
+                      child: CircularProgressIndicator())
+                  : Container(),
+              Container(
+                width: 90.w,
+                margin: EdgeInsets.all(5.w),
+                padding: EdgeInsets.all(5.0),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Utils.hexToColor("#e2e2e2"))),
+                child: RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                      text: response?.query ?? "",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black)),
+                  TextSpan(
+                      text: response?.text ?? "",
+                      style: TextStyle(color: Colors.black))
+                ])),
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+    ));
   }
 }
