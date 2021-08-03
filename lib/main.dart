@@ -81,7 +81,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  String response = "";
+  BalabobaResponse? response;
   var inputController = TextEditingController();
   bool loading = false;
   List<Intro> intros = [];
@@ -159,21 +159,27 @@ class _SearchPageState extends State<SearchPage> {
               Container(
                   height: 15.h, child: Image.asset('assets/balaboba.png')),
               Container(
-                height: 15.h,
-                width: 75.w,
+                constraints: BoxConstraints(maxHeight: 15.h),
+                width: 90.w,
                 child: TextFormField(
                   maxLines: null,
                   controller: inputController,
                   decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 3, color: AppColors.mainColor)),
-                      fillColor: AppColors.mainColor,
-                      border: OutlineInputBorder(),
-                      hintText: AppStrings.inputHint),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 3, color: AppColors.mainColor)),
+                    fillColor: AppColors.mainColor,
+                    border: OutlineInputBorder(),
+                    hintText: AppStrings.inputHint,
+                    suffixIcon: IconButton(
+                      onPressed: inputController.clear,
+                      icon: Icon(Icons.clear),
+                    ),
+                  ),
                 ),
               ),
               Container(
+                margin: EdgeInsets.all(5.w),
                 child: MaterialButton(
                   padding: const EdgeInsets.all(20.0),
                   color: AppColors.mainColor,
@@ -190,22 +196,33 @@ class _SearchPageState extends State<SearchPage> {
                     print(intros);
 
                     setState(() {
-                      this.response = response.text;
+                      this.response = response;
                       this.loading = false;
                     });
                   },
                 ),
               ),
               loading
-                  ? Container(child: CircularProgressIndicator())
+                  ? Container(
+                      margin: EdgeInsets.all(15.0),
+                      child: CircularProgressIndicator())
                   : Container(),
               Container(
-                width: 75.w,
+                width: 90.w,
                 margin: EdgeInsets.all(5.w),
                 padding: EdgeInsets.all(5.0),
                 decoration: BoxDecoration(
                     border: Border.all(color: Utils.hexToColor("#e2e2e2"))),
-                child: Text(response),
+                child: RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                      text: response?.query ?? "",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black)),
+                  TextSpan(
+                      text: response?.text ?? "",
+                      style: TextStyle(color: Colors.black))
+                ])),
               )
             ],
           ),
